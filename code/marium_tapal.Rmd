@@ -1,0 +1,18 @@
+---
+title: "EDA - Marium"
+author: "Marium Tapal"
+date: "3/24/2021"
+output: html_document
+---
+
+```{r packages, include=FALSE}
+library(tidyverse)
+library(readxl)
+library(janitor)
+library(here)
+library(lubridate)
+library(plotly)
+library(mosaic)
+library(datapasta)
+library(patchwork)
+```
