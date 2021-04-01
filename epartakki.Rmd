@@ -6,38 +6,36 @@ output: html_document
 ---
 
 ```{r}
-library(RPostgres)
-library(RPostgreSQL)
+library(RMySQL)
 library(devtools)
 library(remotes)
 library(DBI)
 library(odbc)
+library(dplyr)
 ```
-con <- dbConnect(RPostgres::Postgres())
 
 
 
 ```{r}
-db <- 'database-1'  #provide the name of your db
+host="instance1.cr7nwtzodfpl.us-east-1.rds.amazonaws.com"
+port= 3306
+user="master"
+password="password"
+db = 'instance1'
 
-host_db <- 'database-1.cr7nwtzodfpl.us-east-1.rds.amazonaws.com'
+my_db = dbConnect(RMySQL::MySQL(),host=host,port=port,user=user,password=password, db=db)
 
-db_port <- '5432'  # or any other port specified by the DBA
+dbListTables(my_db)
+```
 
-db_user <- 'master'  
-
-db_password <- 'password'
-
-con <- dbConnect(RPostgres::Postgres(), dbname = db, host=host_db, port=db_port, user=db_user, password=db_password)  
+```{r}
+dbSendQuery (my_db, "LOAD DATA INFILE '~/Downloads/data/IDS.csv'
+             INTO TABLE ids
+             FIELDS TERMINATED by ','
+             ENCLOSED BY '\"'
+             LINES TERMINATED BY '\r\n';"
+             )
 ```
 
 
 
-
-con <- DBI::dbConnect(odbc::odbc(),
-                      Driver   = "[your driver's name]",
-                      Server   = "[your server's path]",
-                      Database = "[your database's name]",
-                      UID      = rstudioapi::askForPassword("Database user"),
-                      PWD      = rstudioapi::askForPassword("Database password"),
-                      Port     = 5432)
