@@ -21,7 +21,27 @@ host="instance1.cr7nwtzodfpl.us-east-1.rds.amazonaws.com"
 port= 3306
 user="master"
 password="password"
-db = 'instance1'
+
+my_db = dbConnect(RMySQL::MySQL(),host=host,port=port,user=user,password=password)
+
+summary(my_db)
+```
+
+```{r}
+dbSendQuery(my_db,"create database database1")
+```
+
+```{r}
+summary(my_db)
+```
+
+
+```{r}
+host="instance1.cr7nwtzodfpl.us-east-1.rds.amazonaws.com"
+port= 3306
+user="master"
+password="password"
+db = 'database1'
 
 my_db = dbConnect(RMySQL::MySQL(),host=host,port=port,user=user,password=password, db=db)
 
@@ -29,7 +49,26 @@ dbListTables(my_db)
 ```
 
 ```{r}
-dbSendQuery (my_db, "LOAD DATA INFILE '~/Downloads/data/IDS.csv'
+dbSendQuery(my_db, "CREATE TABLE ids(
+time datetime, 
+sourceIP varchar(255), 
+sourcePort int, 
+destIP varchar(255), 
+destPort int, 
+classification varchar(255), 
+priority int, 
+label varchar(255), 
+packet_info varchar(255), 
+packet_info_cont varchar(255), 
+xref varchar(255));"
+)
+
+dbListTables(my_db)
+```
+
+
+```{r}
+dbSendQuery (my_db, "LOAD DATA LOCAL INFILE '~/Library/Mobile Documents/com~apple~CloudDocs/SDS 235 DC4/IDS.csv'
              INTO TABLE ids
              FIELDS TERMINATED by ','
              ENCLOSED BY '\"'
