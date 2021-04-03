@@ -15,4 +15,17 @@ library(plotly)
 library(mosaic)
 library(datapasta)
 library(patchwork)
+library(vroom)
 ```
+
+```{r}
+firewall1 <- vroom::vroom("~/Downloads/dc4-data/Firewall/Firewall-part1.txt", col_names = FALSE)
+firewall2 <- vroom::vroom("~/Downloads/dc4-data/Firewall/Firewall-part2.txt")
+firewall3 <- vroom::vroom("~/Downloads/dc4-data/Firewall/Firewall-part3.txt", col_names = FALSE)
+firewall4 <- vroom::vroom("~/Downloads/dc4-data/Firewall/Firewall-part4.txt")
+firewall_day1 <- vroom::vroom("~/Downloads/dc4-data/Firewall/Firewall-04062012.csv")
+firewall_day2 <- vroom::vroom("~/Downloads/dc4-data/Firewall/Firewall-04072012.csv")
+ids_day1 <- vroom::vroom("~/Downloads/dc4-data/IDS/IDS-0406.csv")
+ids_day2 <- vroom::vroom("~/Downloads/dc4-data/IDS/IDS-0407.csv")
+```
+
