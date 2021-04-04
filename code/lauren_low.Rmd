@@ -1,0 +1,129 @@
+---
+title: "lauren_low"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(vroom)
+library(igraph)
+library(ggraph)
+library(plotly)
+```
+
+```{r load-data, message=FALSE}
+firewall1 <- vroom::vroom("~/Desktop/DC4-data/Firewall/Firewall-part1.txt", col_names = FALSE)
+firewall2 <- vroom::vroom("~/Desktop/DC4-data/Firewall/Firewall-part2.txt")
+firewall3 <- vroom::vroom("~/Desktop/DC4-data/Firewall/Firewall-part3.txt", col_names = FALSE)
+firewall4 <- vroom::vroom("~/Desktop/DC4-data/Firewall/Firewall-part4.txt")
+firewall_day1 <- vroom::vroom("~/Desktop/DC4-data/Firewall/Firewall-04062012.csv")
+firewall_day2 <- vroom::vroom("~/Desktop/DC4-data/Firewall/Firewall-04072012.csv")
+ids_day1 <- vroom::vroom("~/Desktop/DC4-data/IDS/IDS-0406.csv")
+ids_day2 <- vroom::vroom("~/Desktop/DC4-data/IDS/IDS-0407.csv")
+```
+
+```{r most common firewall sourceIPs day 1}
+firewall_day1 <- firewall_day1 %>%
+  rename(sourceIP = 'Source IP', 
+         destIP = 'Destination IP')
+
+common_firewall_source_1 <- firewall_day1 %>%
+  count(sourceIP, sort = TRUE) %>%
+  slice(1:25) %>%
+  filter(rank(desc(n))>0)
+common_firewall_source_1
+```
+
+```{r plotting most common source IPs day 1}
+common_source_plot_1 <-ggplot(data = common_firewall_source_1, aes(x = reorder(sourceIP, n), y = n)) +
+  geom_bar(stat = "identity") + 
+  coord_flip() +
+  xlab("Common Source IP Addresses") + 
+  ylab("Number of Occurances on April 6th")
+common_source_plot_1
+```
+
+
+```{r filtering for sourceIP 172.23.0.132}
+common_source_172.23.0.132_1 <- firewall_day1 %>%
+  filter(sourceIP == '172.23.0.132')
+common_source_172.23.0.132_1 
+```
+
+```{r destIPs most conected to sourceIP 172.23.0.132 on day 1}
+IP_connections_1 <- common_source_172.23.0.132_1 %>%
+  count(sourceIP, destIP, sort = TRUE)
+IP_connections_1
+```
+
+```{r data table to graph connected IPs}
+IP_graph_1 <- IP_connections_1 %>%
+  group_by(sourceIP) %>%
+  filter(n > 50) %>%
+  graph_from_data_frame()
+IP_graph_1
+```
+
+```{r graph indicating how connected IPs are for day 1}
+ IP_connect_graph_1 <- ggraph(IP_graph_1, layout = "fr") +
+  geom_edge_link() +
+  geom_node_point() +
+  geom_node_text(aes(label = name), vjust = 1, hjust = 1)
+
+a <- grid::arrow(type = "closed", length = unit(.15, "inches"))
+
+ggraph(IP_graph_1, layout = "fr") +
+  geom_edge_link(aes(edge_alpha = n), show.legend = FALSE,
+                 arrow = a, end_cap = circle(.07, 'inches')) +
+  geom_node_point(color = "lightblue", size = 5) +
+  geom_node_text(aes(label = name), vjust = 1, hjust = 1) +
+  theme_void() 
+```
+
+```{r most common firewall sourceIPs day 2}
+firewall_day2 <- firewall_day2 %>%
+  rename(sourceIP = 'Source IP', 
+         destIP = 'Destination IP')
+
+common_firewall_source_2 <- firewall_day2 %>%
+  count(sourceIP, sort = TRUE) %>%
+  slice(1:25) %>%
+  filter(rank(desc(n))>0)
+common_firewall_source_2
+```
+
+```{r filtering for sourceIP 172.23.252.10}
+common_source_172.23.252.10 <- firewall_day2 %>%
+  filter(sourceIP == '172.23.252.10')
+common_source_172.23.252.10
+```
+
+```{r destIPs most conected to sourceIP 172.23.0.132 on day 2}
+IP_connections_2 <- common_source_172.23.252.10 %>%
+  count(sourceIP, destIP, sort = TRUE)
+IP_connections_2
+```
+
+```{r data table to graph connected IPs}
+IP_graph_2 <- IP_connections_2 %>%
+  group_by(sourceIP) %>%
+  filter(n > 50) %>%
+  graph_from_data_frame()
+IP_graph_2
+```
+
+```{r graph indicating how connected IPs are for day 1}
+ IP_connect_graph_2 <- ggraph(IP_graph_2, layout = "fr") +
+  geom_edge_link() +
+  geom_node_point() +
+  geom_node_text(aes(label = name), vjust = 1, hjust = 1)
+
+a <- grid::arrow(type = "closed", length = unit(.15, "inches"))
+
+ggraph(IP_graph_2, layout = "fr") +
+  geom_edge_link(aes(edge_alpha = n), show.legend = FALSE,
+                 arrow = a, end_cap = circle(.07, 'inches')) +
+  geom_node_point(color = "lightblue", size = 5) +
+  geom_node_text(aes(label = name), vjust = 1, hjust = 1) +
+  theme_void() 
+```
