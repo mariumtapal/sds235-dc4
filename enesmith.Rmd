@@ -16,6 +16,8 @@ library(mosaic)
 library(datapasta)
 library(patchwork)
 library(vroom)
+library(igraph)
+library(ggraph)
 ```
 
 ```{r}
@@ -28,3 +30,99 @@ firewall_day2 <- vroom::vroom("~/Downloads/SDS 235/DC4/Firewall-04072012.csv")
 ids_day1 <- vroom::vroom("~/Downloads/SDS 235/DC4/IDS-0406-updated.csv")
 ids_day2 <- vroom::vroom("~/Downloads/SDS 235/DC4/IDS-0407.csv")
 ```
+
+```{r}
+#take random sample of firewall 1 to get idea of variables
+firewall_1_samp <- sample_n(firewall1, 100)
+
+#take random sample of firewall day 1 to get idea of variables
+firewall_day1_samp <- sample_n(firewall_day1, 100)
+```
+
+```{r}
+#look into IPs that are categorized as potential corporate privacy violation in ids_day1
+ids_violations <- ids_day1 %>% 
+  filter(classification == "Potential Corporate Privacy Violation")
+
+#look at destination IPs of this classification on day 1 (4/5)
+ids_violations %>% 
+  group_by(destIP) %>% 
+  count(destIP)
+
+```
+
+For day one of the IDS logs (April 5th), there are 60 instances classified as potential corporate privacy violations. For all 60 of these violations, the destination IP is 172.23.0.10, which according to the description doc is "the server running critical network operations: domain controller and domain name server." Moreover, all of these potential violations occur at 18:07 (6:07 PM) on April 5th.
+
+```{r}
+#look at source IPs for this classification on day 1
+ids_violations %>% 
+  group_by(sourceIP) %>% 
+  count(destIP)
+
+ids_graph_1 <- ids_violations %>% 
+  group_by(sourceIP) %>% 
+  count(destIP) %>% 
+  graph_from_data_frame()
+
+#create network graph for source ips of potential corporate privacy violations
+ids_connect_graph_1 <- ggraph(ids_graph_1, layout = "fr") +
+  geom_edge_link() +
+  geom_node_point() +
+  geom_node_text(aes(label = name), vjust = 1, hjust = 1)
+
+a <- grid::arrow(type = "closed", length = unit(.15, "inches"))
+
+ggraph(ids_graph_1, layout = "fr") +
+  geom_edge_link(aes(edge_alpha = n), show.legend = FALSE,
+                 arrow = a, end_cap = circle(.07, 'inches')) +
+  geom_node_point(color = "hot pink", size = 5) +
+  geom_node_text(aes(label = name), vjust = 1, hjust = 1) +
+  theme_void()
+```
+
+There were 30 different source IPs that made a potential corporate privacy violation at 6:07 PM on April 5th. They are all of the form 172.25.x.x, which according to the data description are individual computers located in offices or cubicles throughout Bank of Money. There were two connections between each of these source IPs and the destination IP. Additionally, all of these source IPs except two have the same port, 1026. 172.23.1.128 and 172.23.1.120 have port 1027.
+
+```{r}
+#repeating the same process for day 2 of IDS data
+ids_violations_2 <- ids_day2 %>% 
+  filter(classification == "Potential Corporate Privacy Violation")
+
+ids_violations_2 %>% 
+  group_by(destIP) %>% 
+  count(destIP)
+```
+
+Again, all violations have the same destination port as day 1, but this time there are 374 potential violations instead of only 60. They occur between 17:26 (5:26 PM) and 18:17 (6:17 PM) on April 6th.
+
+```{r}
+#look at source IPs for this classification on day 1
+ids_violations_2 %>% 
+  group_by(sourceIP) %>% 
+  count(destIP)
+
+ids_graph_2 <- ids_violations_2 %>% 
+  group_by(sourceIP) %>% 
+  count(destIP) %>% 
+  filter(n > 5) %>% 
+  graph_from_data_frame()
+
+#create network graph for source ips of potential corporate privacy violations
+ids_connect_graph_2 <- ggraph(ids_graph_2, layout = "fr") +
+  geom_edge_link() +
+  geom_node_point() +
+  geom_node_text(aes(label = name), vjust = 1, hjust = 1)
+
+a <- grid::arrow(type = "closed", length = unit(.15, "inches"))
+
+ggraph(ids_graph_2, layout = "fr") +
+  geom_edge_link(aes(edge_alpha = n), show.legend = FALSE,
+                 arrow = a, end_cap = circle(.07, 'inches')) +
+  geom_node_point(color = "hot pink", size = 5) +
+  geom_node_text(aes(label = name), vjust = 1, hjust = 1) +
+  theme_void()
+```
+
+There are two source IPs that have 12 connections, while all others have either 6, 4, or 2. To simplify the network, we filtered the source ips that had 6 or more connections. All of these source IPs also appear to be individual office computers. The IPs with the most connections to the destination IP were 172.23.0.111 and 172.23.0.112.
+
+
+
