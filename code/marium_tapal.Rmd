@@ -29,3 +29,68 @@ ids_day1 <- vroom::vroom("~/Downloads/dc4-data/IDS/IDS-0406.csv")
 ids_day2 <- vroom::vroom("~/Downloads/dc4-data/IDS/IDS-0407.csv")
 ```
 
+# IDS connections
+
+```{r}
+# change time into datetime type
+ids_day1$time <- parse_date_time(ids_day1$time, "%m/%d/%Y %H:%M")
+ids_day2$time <- parse_date_time(ids_day2$time, "%m/%d/%Y %H:%M")
+
+# bind datasets together
+ids <- rbind(ids_day1, ids_day2)
+ids %>%
+  group_by(sourcePort, destPort) %>%
+  summarise(n = n()) %>%
+  arrange(desc(n))
+
+ids %>%
+  group_by(destPort, sourcePort) %>%
+  summarise(n = n()) %>%
+  arrange(desc(n))
+ids %>%
+  filter(destPort == 445) %>%
+  filter(classification == "Attempted Information Leak") %>%
+  group_by(sourcePort) %>%
+  summarise(n = n()) %>%
+  arrange(desc(n))
+
+ids %>%
+  select(classification) %>%
+  unique()
+
+firewall %>%
+  group_by(`Destination port`, `Source port`) %>%
+  summarise(n = n()) %>%
+  arrange(desc(n))
+firewall %>%
+  filter(`Destination port` == 80) %>%
+  group_by(`Source port`) %>%
+  summarise(n = n()) %>%
+  arrange(desc(n))
+```
+
+# Firewall connections
+
+```{r}
+# change time into datetime type
+firewall_day1$`Date/time` <- parse_date_time(firewall_day1$`Date/time`, "%d/%Om/%Y %H:%M:%S")
+firewall_day2$`Date/time` <- parse_date_time(firewall_day2$`Date/time`, "%d/%Om/%Y %H:%M:%S")
+
+# bind datasets together
+firewall <- rbind(firewall_day1, firewall_day2)
+# change port to numeric
+firewall <- firewall %>% mutate(
+  `Source port` = as.numeric(`Source port`),
+  `Destination port` = as.numeric(`Destination port`)
+)
+
+# filter for timeframe to see if something is happening
+firewall_subset1 <- firewall %>%
+  filter(`Date/time` >= "2012-04-06 00:00:00" & `Date/time` <= "2012-04-06 01:00:00") %>%
+  filter(`Destination port` != 80 | `Destination port` != 53)
+
+# firewall_subset2 <- firewall_subset %>% filter(`Destination port` != 80 | `Destination port` != 53)
+# firewall_subset2 %>% group_by(`Source port`, `Destination port`) %>% summarise(n = n()) %>% arrange(desc(n))
+
+test <- firewall %>% filter(`Source IP` == "172.23.0.132")
+```
