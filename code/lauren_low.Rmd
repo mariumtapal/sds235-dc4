@@ -34,13 +34,23 @@ common_firewall_source_1 <- firewall_day1 %>%
 common_firewall_source_1
 ```
 
+```{r plotting most common source IPs day 1}
+common_source_plot_1 <-ggplot(data = common_firewall_source_1, aes(x = reorder(sourceIP, n), y = n)) +
+  geom_bar(stat = "identity") + 
+  coord_flip() +
+  xlab("Common Source IP Addresses") + 
+  ylab("Number of Occurances on April 6th")
+common_source_plot_1
+```
+
+
 ```{r filtering for sourceIP 172.23.0.132}
 common_source_172.23.0.132_1 <- firewall_day1 %>%
   filter(sourceIP == '172.23.0.132')
 common_source_172.23.0.132_1 
 ```
 
-```{r}
+```{r destIPs most conected to sourceIP 172.23.0.132 on day 1}
 IP_connections_1 <- common_source_172.23.0.132_1 %>%
   count(sourceIP, destIP, sort = TRUE)
 IP_connections_1
@@ -70,7 +80,6 @@ ggraph(IP_graph_1, layout = "fr") +
   theme_void() 
 ```
 
-
 ```{r most common firewall sourceIPs day 2}
 firewall_day2 <- firewall_day2 %>%
   rename(sourceIP = 'Source IP', 
@@ -89,7 +98,7 @@ common_source_172.23.252.10 <- firewall_day2 %>%
 common_source_172.23.252.10
 ```
 
-```{r}
+```{r destIPs most conected to sourceIP 172.23.0.132 on day 2}
 IP_connections_2 <- common_source_172.23.252.10 %>%
   count(sourceIP, destIP, sort = TRUE)
 IP_connections_2
