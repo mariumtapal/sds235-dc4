@@ -1,0 +1,30 @@
+---
+title: "enesmith"
+author: "Elisabeth Nesmith"
+date: "4/3/2021"
+output: html_document
+---
+
+```{r packages, include=FALSE}
+library(tidyverse)
+library(readxl)
+library(janitor)
+library(here)
+library(lubridate)
+library(plotly)
+library(mosaic)
+library(datapasta)
+library(patchwork)
+library(vroom)
+```
+
+```{r}
+firewall1 <- vroom::vroom("~/Downloads/SDS 235/DC4/Firewall-part1.txt", col_names = FALSE)
+firewall2 <- vroom::vroom("~/Downloads/SDS 235/DC4/Firewall-part2.txt")
+firewall3 <- vroom::vroom("~/Downloads/SDS 235/DC4/Firewall-part3.txt", col_names = FALSE)
+firewall4 <- vroom::vroom("~/Downloads/SDS 235/DC4/Firewall-part4.txt")
+firewall_day1 <- vroom::vroom("~/Downloads/SDS 235/DC4/Firewall-04062012.csv")
+firewall_day2 <- vroom::vroom("~/Downloads/SDS 235/DC4/Firewall-04072012.csv")
+ids_day1 <- vroom::vroom("~/Downloads/SDS 235/DC4/IDS-0406-updated.csv")
+ids_day2 <- vroom::vroom("~/Downloads/SDS 235/DC4/IDS-0407.csv")
+```

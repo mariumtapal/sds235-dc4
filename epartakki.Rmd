@@ -68,7 +68,7 @@ dbListTables(my_db)
 
 
 ```{r}
-dbSendQuery (my_db, "LOAD DATA LOCAL INFILE '~/Library/Mobile Documents/com~apple~CloudDocs/SDS 235 DC4/IDS.csv'
+dbSendQuery (my_db, "LOAD DATA LOCAL INFILE '~/Desktop/SDS 235 DC4/IDS.csv'
              INTO TABLE ids
              FIELDS TERMINATED by ','
              ENCLOSED BY '\"'
