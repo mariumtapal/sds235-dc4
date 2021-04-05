@@ -31,7 +31,7 @@ ids_day2 <- vroom::vroom("~/Downloads/dc4-data/IDS/IDS-0407.csv")
 
 # IDS connections
 
-```{r}
+```{r IDS connections}
 # change time into datetime type
 ids_day1$time <- parse_date_time(ids_day1$time, "%m/%d/%Y %H:%M")
 ids_day2$time <- parse_date_time(ids_day2$time, "%m/%d/%Y %H:%M")
@@ -71,7 +71,7 @@ firewall %>%
 
 # Firewall connections
 
-```{r}
+```{r firewall connections}
 # change time into datetime type
 firewall_day1$`Date/time` <- parse_date_time(firewall_day1$`Date/time`, "%d/%Om/%Y %H:%M:%S")
 firewall_day2$`Date/time` <- parse_date_time(firewall_day2$`Date/time`, "%d/%Om/%Y %H:%M:%S")
@@ -88,9 +88,6 @@ firewall <- firewall %>% mutate(
 firewall_subset1 <- firewall %>%
   filter(`Date/time` >= "2012-04-06 00:00:00" & `Date/time` <= "2012-04-06 01:00:00") %>%
   filter(`Destination port` != 80 | `Destination port` != 53)
-
-# firewall_subset2 <- firewall_subset %>% filter(`Destination port` != 80 | `Destination port` != 53)
-# firewall_subset2 %>% group_by(`Source port`, `Destination port`) %>% summarise(n = n()) %>% arrange(desc(n))
 
 test <- firewall %>% filter(`Source IP` == "172.23.0.132")
 ```

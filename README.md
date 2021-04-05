@@ -10,10 +10,11 @@ Group Members:
 -   Elisabeth Nesmith
 -   Lauren Low
 
-There are two main components to our analysis:
+There are three main components to our analysis:
 
 -   the **final report** with all the visualizations and thought process
-    explained: `final_report.html`
+    explained: `final_report.ipynb`
+-   `code.Rmd` with the code needed to reproduce our analysis
 -   a folder with individual code files for all the group members:
     `code\...`
 
